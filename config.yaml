@@ -1,0 +1,9 @@
+matches:
+  - trigger: ";query"
+    replace: "SELECT * FROM TABLE.COLUMN;"
+
+  - trigger: ";quote"
+    replace: "Some quote"
+
+  - trigger: ";forest"
+    replace: "Some item?"
