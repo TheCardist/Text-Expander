@@ -1,4 +1,4 @@
-from pynput.keyboard import Listener, Key, Controller
+from pynput.keyboard import Listener, Key
 import pyautogui
 import yaml
 import pystray
@@ -6,13 +6,18 @@ import PIL.Image
 import sys
 
 
-def setup():
+def setup(): -> Dictionary
+    """Load in the yaml file and return the dictionary."""
     with open('config.yaml', 'r') as f:
         configuration = yaml.safe_load(f)
     return configuration.get('matches')
 
 
 def collect_trigger():
+    """Collect the keystrokes from the user looking for the most recent occurence of the semi-colon then comparing against the trigger words
+    
+    If the trigger word is found then it replaces that word with the replacement value and clears the list, awaiting the next semi-colon entry."""
+    
     # Find the last occurence of the : character and then pull the word that follows
     start_index = len(keylog) - 1 - keylog[::-1].index(';')
     trigger_word = ''.join(keylog[start_index::])
@@ -29,6 +34,8 @@ def collect_trigger():
 
 
 def on_press(key):
+    """If the first entry into the keylog is a semi-colon and space was the last key entered then it goes to the collect trigger function to get the replacemetn value.
+    Otherwise the keys are just logged into the keylog list."""
     try:
         if key and key.char == ';':
             keylog.append(key.char)
@@ -40,19 +47,20 @@ def on_press(key):
 
 
 def exit_program(icon, item):
+    """Stop the tray icon and exit the program"""
     icon.stop()
     sys.exit()
 
 
 if __name__ == '__main__':
     configuration = setup()
-    keyboard = Controller()
     keylog = []
     image = PIL.Image.open("icon.png")
     tray = pystray.Icon("Tray", image, menu=pystray.Menu(
         pystray.MenuItem("Exit", exit_program)))
 
     with Listener(on_press=on_press) as listener:
-
         tray.run()
         listener.join()
+        
+      
