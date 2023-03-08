@@ -17,7 +17,7 @@ def setup():
 
 
 def collect_trigger():
-    # Find the last occurence of the : character and then pull the word that follows
+    # Find the last occurence of the ; character and then pull the word that follows
     start_index = len(keylog) - 1 - keylog[::-1].index(';')
     trigger_word = ''.join(keylog[start_index::])
 
@@ -42,7 +42,6 @@ def on_press(key):
             keylog.append(key.char)
         elif len(keylog) > 0 and keylog[0] == ';':
             keylog.append(key.char)
-            print(keylog)
     except AttributeError:
         pass
 
