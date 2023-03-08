@@ -7,9 +7,13 @@ import sys
 
 
 def setup():
-    with open('config.yaml', 'r') as f:
-        configuration = yaml.safe_load(f)
-    return configuration.get('matches')
+    try:
+        with open('config.yaml', 'r') as f:
+            configuration = yaml.safe_load(f)
+        return configuration.get('matches')
+    except FileNotFoundError:
+        print("Configuration file not found!")
+        return None
 
 
 def collect_trigger():
@@ -48,12 +52,17 @@ def exit_program(icon, item):
     sys.exit()
 
 
-if __name__ == '__main__':
-    configuration = setup()
-    keylog = []
+def create_system_tray_icon():
     image = PIL.Image.open("icon.png")
     tray = pystray.Icon("Tray", image, menu=pystray.Menu(
         pystray.MenuItem("Exit", exit_program)))
+    return tray
+
+
+if __name__ == '__main__':
+    configuration = setup()
+    keylog = []
+    tray = create_system_tray_icon()
 
     with Listener(on_press=on_press) as listener:
 
