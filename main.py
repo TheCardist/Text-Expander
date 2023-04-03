@@ -7,6 +7,8 @@ import sys
 
 
 def setup():
+    """Load in the configurations setup by the user in the YAML file. This determines what the trigger and replacement values will be."""
+    
     try:
         with open('config.yaml', 'r') as f:
             configuration = yaml.safe_load(f)
@@ -17,10 +19,13 @@ def setup():
 
 
 def collect_trigger():
-    # Find the last occurence of the ; character and then pull the word that follows
+    """Collect the triggers that were determined by the user and replace them with the user determined value."""
+    
+    # Find the last occurence of the ; character and then pull the word that follows it
     start_index = len(keylog) - 1 - keylog[::-1].index(';')
     trigger_word = ''.join(keylog[start_index::])
 
+    # Review the trigger words in the configuration file to see if any match the word that followed the semi-colon. If true then remove that trigger word and replace it with the value associated to it.
     for word in configuration:
         if word['trigger'] == trigger_word:
             replace_value = ''.join(word.get('replace'))
@@ -32,6 +37,8 @@ def collect_trigger():
 
 
 def on_press(key):
+    """Reviewing each keypress to see if it meets the conditions below. This will determine if the keys are logged or not and when to move to the trigger replacement function."""
+    
     try:
         if len(keylog) > 0 and keylog[0] == ';' and key == Key.space:
             collect_trigger()
@@ -47,11 +54,14 @@ def on_press(key):
 
 
 def exit_program(icon, item):
+    """Create a little exit menu on the icon within the icon tray."""
+    
     icon.stop()
     sys.exit()
 
 
 def create_system_tray_icon():
+    """Create the icon within the system tray when this is started."""
     image = PIL.Image.open("icon.png")
     tray = pystray.Icon("Tray", image, menu=pystray.Menu(
         pystray.MenuItem("Exit", exit_program)))
